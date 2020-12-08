@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12 text-center py-3">
+            {% if key %}
+            <h1 class="my-5">승인 오류, 재시도 해주세요.</h1>
+            {% else %}
+            <h1 class="my-5">아래 메일 주소를 입력하여 승인 메일을 재전송 받으세요.</h1>
+            {% endif %}
+        </div>
+        <div class="col-12 text-center py-5">
+            <form method="POST" action="">  {% csrf_token %}
+                {{ form.as_p }}
+                <input class="btn btn-secondary" type="submit" value="재전송" />
+            </form>
+        </div>
+    </div>
+{% endblock %}

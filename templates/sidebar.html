@@ -42,8 +42,10 @@
                 </div>
                 <br>
                 <div class="mt-1">
-                    <a href="#" class="btn btn-sm btn-outline-success"><i class="fas fa-signature"></i> Login</a>
-                    <a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-file-signature"></i> Join</a>
+                    <a href="{% url 'accountapp:login' %}" class="btn btn-sm btn-outline-success"><i
+                            class="fas fa-signature"></i> Login</a>
+                    <a href="{% url 'accountapp:regist' %}" class="btn btn-sm btn-outline-primary"><i
+                            class="fas fa-file-signature"></i> Join</a>
                 </div>
                 {% endif %}
             </div>
@@ -242,19 +244,20 @@
         </div>
         <!-- sidebar-content  -->
         <div class="sidebar-footer">
-            <a href="#">
+            <a href="{% if not user.is_authenticated %} {% url 'accountapp:regist' %} {% else %}# {%endif%}">
                 <i class="fa fa-bell"></i>
                 <span class="badge badge-pill badge-warning notification">3</span>
             </a>
-            <a href="#">
+            <a href="{% if not user.is_authenticated %} {% url 'accountapp:regist' %} {% else %}# {%endif%}">
                 <i class="fa fa-envelope"></i>
                 <span class="badge badge-pill badge-success notification">7</span>
             </a>
-            <a href="#">
+
+            <a href="{% if not user.is_authenticated %} {% url 'accountapp:regist' %} {% else %} {% url 'accountapp:setting' pk=user.pk %} {%endif%}">
                 <i class="fa fa-cog"></i>
                 <span class="badge-sonar"></span>
             </a>
-            <a href="#">
+            <a href="{% if not user.is_authenticated %} # {% else %} {% url 'logout' %} {%endif%}">
                 <i class="fa fa-power-off"></i>
             </a>
         </div>
