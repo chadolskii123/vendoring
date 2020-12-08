@@ -72,4 +72,4 @@ fabric.properties
 
 venv/
 
-vendori/__pycache__/
+vendori/__pycache__/ 
