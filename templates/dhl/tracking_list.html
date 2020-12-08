@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+{% for object in object_list %}
+
+<div class="row my-3">
+    <div class="col-12">
+        <h1 {% if object.shipment_status_status == "delivered" %}
+        style="color:blue;"
+        {% else %}
+        style="color:coral;"
+        {% endif %}> Tracking
+        # {{ object.shipment_id }}</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <table class="table">
+            <thead>
+            <th width="12%">정보</th>
+            <th>내용</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td>배송 타입</td>
+                <td>{{ object.shipment_service }}</td>
+            </tr>
+            <tr>
+                <td>출발지</td>
+                <td>{{ object.shipment_origin }}</td>
+            </tr>
+            <tr>
+                <td>목적지</td>
+                <td>{{ object.shipment_destination }}</td>
+            </tr>
+            <tr>
+                <td>최종 업데이트</td>
+                <td>{{ object.shipment_status_time }}</td>
+            </tr>
+            <tr>
+                <td>현재 위치</td>
+                <td>{{ object.shipment_status_location }}</td>
+            </tr>
+            <tr>
+                <td>현재 상태</td>
+                <td>{{ object.shipment_status_status }}</td>
+            </tr>
+            <tr>
+                <td>세부 내역</td>
+                <td>
+                    <table class="table">
+                        <thead>
+                        <th width="20%">시간</th>
+                        <th>설명</th>
+                        <th>위치</th>
+                        </thead>
+                        <tbody>
+                        {% for event in object.shipment_events_list %}
+                        <tr>
+                            <td>{{ event.time }}</td>
+                            <td>{{ event.desc }}</td>
+                            <td>{{ event.address }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
