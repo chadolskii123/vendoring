@@ -36,17 +36,9 @@ class AccountRegistView(CreateView):
     form_class = RegisterForm
     template_name = 'accountapp/register.html'
 
-    def get(self, request, **kwargs):
-        if request.user.is_authenticated:
-            logout_link = reverse("logout")
-            msg = f"로그인 상태로는 회원가입을 할 수 없습니다. \n <a href='{logout_link}'>로그아웃</a> 후에 회원가입 해주세요."
-            messages.success(request, mark_safe(msg))
-            return redirect("/")
-        else:
-            context = {"form": self.get_form()}
-            return render(request, 'accountapp/register.html', context)
-
     def get_success_url(self):
+        msg = f"가입이 완료되었습니다."
+        messages.success(self.request, msg)
         return reverse("accountapp:login")
 
 

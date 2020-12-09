@@ -78,13 +78,14 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     user_id = models.CharField(max_length=255, unique=True, verbose_name="ID")
     email = models.CharField(max_length=255, unique=True, verbose_name="이메일")
-    is_active = models.BooleanField(default=True)
+    profile = models.ImageField(upload_to='profile/', null=True)
     company_cd = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
     dept_cd = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True)
     position_cd = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True)
     # 권한 설정, 낮을 수록 접근권한 높음
     # 개발자 / 관리자 / 팀장 / 소팀장 / 팀원 5단계 구분 - 기본은 5단계로 시작, 별도 관리자이상급의 설정이 필요함
     perm_grade = models.IntegerField(default=5)
+    is_active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
 

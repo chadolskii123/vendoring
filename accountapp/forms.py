@@ -92,6 +92,7 @@ class RegisterForm(forms.ModelForm):
     필수값 모두 포함
     비밀번호 확인 필요
     """
+
     password1 = forms.CharField(label='비밀번호', widget=forms.PasswordInput)
     password2 = forms.CharField(label='비밀번호 확인', widget=forms.PasswordInput)
 
@@ -127,9 +128,10 @@ class AccountUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ('email', 'profile')
 
         labels = {
+            'profile': '프로필 사진',
             'email': '이메일',
         }
 

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+    <div class="text-center mx-auto my-3" style="max-width: 500px;">
+        <div>
+            <h4>Delete Article : {{  target_article.title }}</h4>
+        </div>
+        <div>
+            <form action="" method="POST">{% csrf_token %}
+                <button type="submit" class="btn btn-danger rounded-pill col-6">삭제</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

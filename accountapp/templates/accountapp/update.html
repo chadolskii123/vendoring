@@ -1,37 +1,43 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
+{% load bootstrap4 %}
 {% block content %}
 
-<form method="POST" class="my-3"> {% csrf_token %}
+<div class="col-6">
+    <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+        {% for field in form.visible_fields %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% if field.name == 'profile' %}<br/>
+            <img id='profile_img' src='{{ user.profile.url }}' alt=""
+                 style="height : 12rem; width:12rem; border-radius: 20rem; object-fit: cover;"/><br/>
+            {% endif %}
 
-    <div class="container pb-5 py-4">
-        <form method="POST"> {% csrf_token %}
-            <div class="row justify-content-center align-items-center" style="height:50vh">
-                <div class="col-4">
-                    <div class="card">
-                        <div class="card-body text">
-                            <h3>회원 정보</h3>
-                            {% for hidden in form.hidden_fields %}
-                            {{ hidden }}
-                            {% endfor %}
-                            {% for field in form.visible_fields %}
-                            <div class="form-group">
-                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                {{ field|add_class:'form-control' }}
-                                {% for error in field.errors %}
-                                <span class="help-block">{{ error }}</span>
-                                {% endfor %}
-                            </div>
-                            {% endfor %}
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-outline-primary">수정</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
+            {{ field|add_class:'form-control' }}
+            {% for error in field.errors %}
+            <span class="help-block">{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <br/>
+        <button type="submit" class="btn btn-dark rounded-pill col-6">수정하기</button>
+    </form>
+</div>
+<script>
 
-</form>
+    $(function () {
+        $('#id_profile').change(function () {
+            console.log("asdf")
+            if (this.files[0]) {
+                var reader = new FileReader();
+                reader.readAsDataURL(this.files[0]);
+                reader.onload = function (e) {
+                    $('#profile_img').attr('src', e.target.result).show();
+                };
+            }
+        })
+    })
+
+</script>
+
 {% endblock %}

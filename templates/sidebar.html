@@ -14,10 +14,15 @@
             </div>
             <div class="sidebar-header">
                 {% if user.is_authenticated %}
-                <div class="user-pic">
+                <div>
+                    {% if user.profile %}
+                    <img src="{{ user.profile.url }}"
+                         alt="User picture" style="height : 1rem; width:1rem; border-radius: 20rem; object-fit: cover;">
+                    {% else %}
                     <img class="img-responsive img-rounded"
                          src="https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg"
                          alt="User picture">
+                    {% endif %}
                 </div>
                 <div class="user-info">
                     <span class="user-name">
@@ -77,15 +82,15 @@
                         <div class="sidebar-submenu">
                             <ul>
                                 <li>
-                                    <a href="#">Dashboard 1
+                                    <a href="{% url 'threadapp:list' %}">List
                                         <span class="badge badge-pill badge-success">Pro</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#">Dashboard 2</a>
+                                    <a href="#">Regist</a>
                                 </li>
                                 <li>
-                                    <a href="#">Dashboard 3</a>
+                                    <a href="#">Q & A</a>
                                 </li>
                             </ul>
                         </div>
@@ -99,15 +104,15 @@
                         <div class="sidebar-submenu">
                             <ul>
                                 <li>
-                                    <a href="#">Products
-
+                                    <a href="#">List
+                                        <span class="badge badge-pill badge-success">Pro</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#">Orders</a>
+                                    <a href="#">Regist</a>
                                 </li>
                                 <li>
-                                    <a href="#">Credit cart</a>
+                                    <a href="#">Q & A</a>
                                 </li>
                             </ul>
                         </div>
@@ -120,19 +125,15 @@
                         <div class="sidebar-submenu">
                             <ul>
                                 <li>
-                                    <a href="#">General</a>
+                                    <a href="#">List
+                                        <span class="badge badge-pill badge-success">Pro</span>
+                                    </a>
                                 </li>
                                 <li>
-                                    <a href="#">Panels</a>
+                                    <a href="#">Regist</a>
                                 </li>
                                 <li>
-                                    <a href="#">Tables</a>
-                                </li>
-                                <li>
-                                    <a href="#">Icons</a>
-                                </li>
-                                <li>
-                                    <a href="#">Forms</a>
+                                    <a href="#">Q & A</a>
                                 </li>
                             </ul>
                         </div>
@@ -145,16 +146,15 @@
                         <div class="sidebar-submenu">
                             <ul>
                                 <li>
-                                    <a href="#">Pie chart</a>
+                                    <a href="#">List
+                                        <span class="badge badge-pill badge-success">Pro</span>
+                                    </a>
                                 </li>
                                 <li>
-                                    <a href="#">Line chart</a>
+                                    <a href="#">Regist</a>
                                 </li>
                                 <li>
-                                    <a href="#">Bar chart</a>
-                                </li>
-                                <li>
-                                    <a href="#">Histogram</a>
+                                    <a href="#">Q & A</a>
                                 </li>
                             </ul>
                         </div>
@@ -167,10 +167,15 @@
                         <div class="sidebar-submenu">
                             <ul>
                                 <li>
-                                    <a href="#">Google maps</a>
+                                    <a href="#">List
+                                        <span class="badge badge-pill badge-success">Pro</span>
+                                    </a>
                                 </li>
                                 <li>
-                                    <a href="#">Open street map</a>
+                                    <a href="#">Regist</a>
+                                </li>
+                                <li>
+                                    <a href="#">Q & A</a>
                                 </li>
                             </ul>
                         </div>
@@ -183,10 +188,15 @@
                         <div class="sidebar-submenu">
                             <ul>
                                 <li>
-                                    <a href="#">Google maps</a>
+                                    <a href="#">List
+                                        <span class="badge badge-pill badge-success">Pro</span>
+                                    </a>
                                 </li>
                                 <li>
-                                    <a href="#">Open street map</a>
+                                    <a href="#">Regist</a>
+                                </li>
+                                <li>
+                                    <a href="#">Q & A</a>
                                 </li>
                             </ul>
                         </div>
