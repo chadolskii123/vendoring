@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+    <script src="//cdn.jsdelivr.net/npm/medium-editor@5.23.2/dist/js/medium-editor.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@5.23.2/dist/css/medium-editor.min.css"
+          type="text/css" media="screen" charset="utf-8">
+    <div class="text-center mx-auto my-3" style="max-width: 500px;">
+        <div>
+            <h4>Article Update</h4>
+        </div>
+        <div>
+            <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                {% bootstrap_form form %}
+                <br/>
+                <button type="submit" class="btn btn-dark rounded-pill col-6">수정하기</button>
+            </form>
+        </div>
+    </div>
+    <script>var editor = new MediumEditor('.editable');</script>
+
+{% endblock %}

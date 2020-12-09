@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+    <div class="text-center mx-auto my-3" style="max-width: 500px;">
+        <div>
+            <h4>Thread Create</h4>
+        </div>
+        <div>
+            <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                {% bootstrap_form form %}
+                <br/>
+                <button type="submit" class="btn btn-dark rounded-pill col-6">업로드</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>var editor = new MediumEditor('.editable');</script>
+{% endblock %}
