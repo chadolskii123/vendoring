@@ -8,9 +8,16 @@
         {% for field in form.visible_fields %}
         <div class="form-group">
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {% if field.name == 'profile' %}<br/>
-            <img id='profile_img' src='{{ user.profile.url }}' alt=""
-                 style="height : 12rem; width:12rem; border-radius: 20rem; object-fit: cover;"/><br/>
+            {% if user.profile %}
+                {% if field.name == 'profile' %}<br/>
+                <img id='profile_img' src='{{ user.profile.url }}' alt=""
+                     style="height : 12rem; width:12rem; border-radius: 20rem; object-fit: cover;"/><br/>
+                {% endif %}
+            {% else %}
+                {% if field.name == 'profile' %}<br/>
+                <img id='profile_img' src='' alt=""
+                     style="height : 12rem; width:12rem; border-radius: 20rem; object-fit: cover;"/><br/>
+                {% endif %}
             {% endif %}
 
             {{ field|add_class:'form-control' }}

@@ -6,6 +6,8 @@ class Company(models.Model):
     company_cd = models.CharField(max_length=2, unique=True, null=False)
     company_nm = models.CharField(max_length=50, null=False)
 
+    def __str__(self):
+        return self.company_nm
 
 # 부서
 class Department(models.Model):

@@ -14,23 +14,28 @@
             </div>
             <div class="sidebar-header">
                 {% if user.is_authenticated %}
-                <div>
-                    {% if user.profile %}
+
+                {% if user.profile %}
+                <div class="user-pic">
                     <img src="{{ user.profile.url }}"
-                         alt="User picture" style="height : 1rem; width:1rem; border-radius: 20rem; object-fit: cover;">
-                    {% else %}
+                         alt="User picture" style="height : 4rem; width:4rem; border-radius: 20rem; object-fit: cover;">
+                </div>
+
+                {% else %}
+                <div class="user-pic">
                     <img class="img-responsive img-rounded"
                          src="https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg"
                          alt="User picture">
-                    {% endif %}
                 </div>
+
+                {% endif %}
                 <div class="user-info">
                     <span class="user-name">
-                        <strong>Vendori</strong>
+                        <strong>{{ user }}</strong>
                     </span>
-                    <span class="user-role">Administrator</span>
+                    <span class="user-role">{{ user.company_cd }} - {{ user.dept_cd }}</span>
                     <span class="user-status">
-                            <i class="fa fa-circle"></i>
+                        <i class="fa fa-circle"></i>
                             <span>Online</span>
                         </span>
                 </div>
