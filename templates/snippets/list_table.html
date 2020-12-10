@@ -25,11 +25,6 @@
 <link href="https://s3-us-west-2.amazonaws.com/colors-css/2.2.0/colors.min.css" rel="stylesheet">
 
 <style>
-    .select,
-    #locale {
-        width: 100%;
-    }
-
     .like {
         margin-right: 10px;
     }
@@ -37,7 +32,7 @@
 
 <h1>{{ title }}</h1>
 <div id="toolbar">
-    <button id="add" class="btn btn-secondary" disabled>
+    <button id="add" class="btn btn-secondary">
         <i class="fa fa-trash"></i> Add
     </button>
     <button id="save" class="btn btn-warning" disabled>
@@ -48,6 +43,7 @@
     </button>
     <a href="#" onclick="doExport()" class="btn btn-primary"><i class="fa fa-trash"></i>Export to PDF</a>
 </div>
+<input type="hidden" id="save_url" value="{%url 'threadapp:save' %}"/>
 <table
         id="table"
         data-toolbar="#toolbar"
@@ -64,48 +60,21 @@
         data-minimum-count-columns="2"
         data-show-pagination-switch="true"
         data-pagination="true"
+        data-pagination-detail-h-align="right"
+        data-pagination-h-align="left"
+        data-pagination-loop="false"
         data-id-field="id"
         data-page-list="[10, 25, 50, 100, all]"
         data-show-footer="true"
         data-side-pagination="server"
         data-url="{% url 'threadapp:json' %}"
-        data-response-handler="responseHandler">
-    <thead>
-    <tr>
-        <th data-field="id">ID</th>
-        <th data-field="name" data-cell-style="cellStyle">Item Name</th>
-        <th data-field="price">Item Price</th>
-    </tr>
-    </thead>
+        data-query-params="queryParams"
+        data-response-handler="responseHandler"
+        data-cache="false">
+
 </table>
 
 <script>
-    function cellStyle(value, row, index) {
-        console.log(value,row,index)
-        var classes = [
-            'bg-blue',
-            'bg-green',
-            'bg-orange',
-            'bg-yellow',
-            'bg-red'
-        ]
-
-        if (index % 2 === 0 && index / 2 < classes.length) {
-            console.log("console log : ", classes[index / 2])
-            return {
-
-                classes: classes[index / 2]
-            }
-        }
-        return {
-            css: {
-                color: 'yellow'
-            }
-        }
-
-    }
-
-
     let rm_list = [];
 
     function exportExcel() {
@@ -121,11 +90,13 @@
 
     var $table = $('#table')
     var $remove = $('#remove')
+    var $save = $('#save')
+    var $add = $('#add')
     var selections = []
 
     function getIdSelections() {
         return $.map($table.bootstrapTable('getSelections'), function (row) {
-            return row.id
+            return row.thread_cd
         })
     }
 
@@ -160,9 +131,10 @@
             alert('You click like action, row: ' + JSON.stringify(row))
         },
         'click .remove': function (e, value, row, index) {
+
             $table.bootstrapTable('remove', {
-                field: 'id',
-                values: [row.id]
+                field: 'thread_cd',
+                values: [row.thread_cd]
             })
         }
     }
@@ -185,9 +157,9 @@
     // }
 
     function initTable() {
+        rm_list = []
         $table.bootstrapTable('destroy').bootstrapTable({
-            height: 800,
-            locale: $('#locale').val(),
+            height: 550,
             columns: [
                 [{
                     field: 'state',
@@ -197,7 +169,7 @@
                     valign: 'middle'
                 }, {
                     title: 'Thread_cd',
-                    field: 'id',
+                    field: 'thread_cd',
                     rowspan: 2,
                     align: 'center',
                     valign: 'middle',
@@ -229,7 +201,11 @@
                     events: window.operateEvents,
                     formatter: operateFormatter
                 }]
-            ]
+            ],
+            // 페이징 처리 - (앞에서 나오는 페이징, 뒤에서나오는 페이징, 가운데 보여줄지 말지)
+            paginationSuccessivelySize: 5,
+            paginationPagesBySide: 2,
+            paginationUseIntermediate: $('#paginationUseIntermediate').prop('checked')
         })
         $table.on('check.bs.table uncheck.bs.table ' +
             'check-all.bs.table uncheck-all.bs.table',
@@ -241,23 +217,56 @@
                 // push or splice the selections if you want to save all data selections
             })
         $table.on('all.bs.table', function (e, name, args) {
-            console.log(name, args)
         })
         $remove.click(function () {
             var ids = getIdSelections()
-            console.log(ids)
             $table.bootstrapTable('remove', {
-                field: 'id',
+                field: 'thread_cd',
                 values: ids
             })
             $remove.prop('disabled', true)
+
+            for (var i = 0; i < ids.length; i++) {
+                rm_list.push(ids[i])
+            }
+            if (rm_list.length > 0) {
+                $save.prop('disabled', false)
+            } else {
+                $save.prop('disabled', true)
+            }
+        })
+        $save.click(function () {
+            $rm_list = rm_list.join(",")
+            if ($rm_list) {
+                if (confirm("저장 하시겠습니까?")) {
+                    $.ajax({
+                        url: "{% url 'threadapp:save' %}",
+                        type: 'POST',
+                        data: {
+                            "csrfmiddlewaretoken": "{{ csrf_token }}",
+                            "rm_list": $rm_list
+                        },
+                        success: function (response) {
+                            console.log(response.msg)
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                }
+            }
         })
     }
 
     $(function () {
         initTable()
-
-        $('#locale').change(initTable)
+        $save.click(initTable)
     })
+
+    function queryParams(params) {
+        $save.prop("disabled", true)
+        return params
+    }
+
 </script>
 {% endblock %}

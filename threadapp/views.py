@@ -1,3 +1,5 @@
+import copy
+
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
@@ -23,7 +25,7 @@ class ThreadListView(ListView):
 
     template_name = 'snippets/list_table.html'
 
-#    paginate_by = 10
+    #    paginate_by = 10
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ThreadListView, self).get_context_data(**kwargs)
@@ -39,7 +41,15 @@ class ThreadDetailView(DetailView):
 
 
 def thread_json(request):
+    page = request.GET.get('page', None)
     search = request.GET.get('search', None)
+    sort = request.GET.get('sort', None)
+    order = request.GET.get('order', None)
+    offset = int(request.GET.get('offset', 0))
+    limit = int(request.GET.get('limit', 10))
+    cur_page = int(offset / limit)
+    print("page : ", page, ", sort : ", sort, ", order : ", order, "\nsearch : ", search, ", offset : ", offset,
+          ", limit : ", limit, ", cur_page : ", cur_page)
 
     if search:
         lookups = Q(thread_nm__icontains=search) | Q(thread_cd__icontains=search)
@@ -47,15 +57,22 @@ def thread_json(request):
     else:
         thread_all = Thread.objects.all()
 
-    offset = int(request.GET.get('offset', 1))  # 없으면 1로 지정
-    limit = int(request.GET.get('limit', 10))
-
     data = []
+    thread_list = thread_all
 
-    for thread in thread_all[offset:offset+limit]:
+    if sort:
+        thread_list = sorted(thread_all[offset: offset + limit], key=lambda p: sort)
+    else:
+        thread_list = sorted(thread_all[offset: offset + limit], key=lambda p: 'thread_cd')
 
+    if order == 'desc':
+        thread_list = thread_list.reverse()
+    else:
+        thread_list = thread_list
+
+    for thread in thread_list:
         inner_data = {
-            "id": thread.thread_cd,
+            "thread_cd": thread.thread_cd,
             "thread_nm": thread.thread_nm,
             "content": thread.content
         }
@@ -65,6 +82,18 @@ def thread_json(request):
     json_data = {
         "total": thread_count,
         "thread_count": thread_count,
-        "rows": data
+        "rows": data,
     }
-    return JsonResponse(json_data, status=200)
+    return JsonResponse(json_data)
+
+
+def thread_save(request):
+    rm_list = request.POST.get('rm_list')
+    rm_cd = rm_list.split(',')
+    thread_obj = Thread.objects.filter(thread_cd__in=rm_cd)
+    rs = thread_obj.delete()
+
+    json_data = {
+        "msg": rs
+    }
+    return JsonResponse(json_data)
