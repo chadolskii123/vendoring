@@ -6,6 +6,9 @@ class Company(models.Model):
     company_cd = models.CharField(max_length=2, unique=True, null=False)
     company_nm = models.CharField(max_length=50, null=False)
 
+    def __str__(self):
+        return self.company_nm
+
 
 # 부서
 class Department(models.Model):
@@ -125,3 +128,18 @@ class User(AbstractBaseUser):
     @property
     def is_admin(self):
         return self.admin
+
+    def dic(self):
+        fields = ['user_id', 'email', 'profile']
+        result = {}
+
+        for field in fields:
+            if field == 'user_id':
+                field1 = 'id'
+                field2 = field
+            else :
+                field1 = field
+                field2 = field
+            result[field1] = self.__dict__[field2]
+
+        return result

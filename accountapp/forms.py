@@ -128,7 +128,7 @@ class AccountUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email', 'profile')
+        fields = ('email', 'profile', 'company_cd', 'dept_cd')
 
         labels = {
             'profile': '프로필 사진',

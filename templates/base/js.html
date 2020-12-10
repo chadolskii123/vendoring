@@ -1,6 +1,4 @@
-
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
 <script>
     jQuery(function ($) {
 
@@ -35,4 +33,28 @@
 
 
     });
+</script>
+
+<script type="text/javascript" src="../../static/js/FileSaver.min.js"></script>
+<script type="text/javascript" src="../../static/js/jspdf.min.js"></script>
+<script type="text/javascript" src="../../static/js/jspdf.plugin.autotable.js"></script>
+<script type="text/javascript" src="../../static/js/tableExport.js"></script>
+<script type="text/javaScript">
+    function doExport() {
+        $('#table').tableExport({
+            type: 'pdf',
+            jspdf: {
+                orientation: 'p',
+                margins: {right: 20, left: 20, top: 30, bottom: 30},
+                autotable: {
+                    styles: {
+                        fillColor: 'inherit',
+                        textColor: 'inherit',
+                        fontStyle: 'inherit'
+                    },
+                    tableWidth: 'wrap'
+                }
+            }
+        });
+    }
 </script>
