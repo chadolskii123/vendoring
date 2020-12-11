@@ -3,8 +3,10 @@ import copy
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView
+from django.views.generic.edit import FormMixin, UpdateView
 
 from accountapp.forms import User
 from threadapp.forms import ThreadCreationForm
@@ -15,13 +17,29 @@ class ThreadCreateView(CreateView):
     model = Thread
     form_class = ThreadCreationForm
     context_object_name = 'target_thread'
-    template_name = 'threadapp/create.html'
-    success_url = reverse_lazy('threadapp:list')
+    template_name = 'threadapp/list.html'
+    success_url = reverse_lazy('threadapp:library')
 
 
-class ThreadListView(ListView):
+def thread_update(request):
+    thread_cd = request.GET.get('thread_cd')
+    thread = get_object_or_404(Thread, thread_cd=thread_cd)
+    form = ThreadCreationForm(request.POST or None, instance=thread)
+    if form.is_valid():
+        form.save()
+
+        return redirect('window.close()')
+    context = {
+        'form': form,
+        'thread_cd': thread_cd
+    }
+    return render(request, 'threadapp/update.html', context)
+
+
+class ThreadListView(ListView, FormMixin):
     model = Thread
     context_object_name = 'object_list'
+    form_class = ThreadCreationForm
 
     template_name = 'snippets/list_table.html'
 
@@ -30,51 +48,56 @@ class ThreadListView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ThreadListView, self).get_context_data(**kwargs)
         context['title'] = "Thread_list"
-        context['cols'] = ['thead_cd', 'thread_nm', 'content']
+        context['col1'] = 'thread_cd'
+        context['col2'] = 'thread_nm'
+        context['col3'] = 'content'
+        context['col4'] = 'image'
+
+        context['create_form'] = self.form_class
         return context
 
 
-class ThreadDetailView(DetailView):
-    model = Thread
-    context_object_name = 'target_thread'
-    template_name = 'threadapp/detail.html'
+def thread_detail(request):
+    thread_cd = request.GET.get('thread_cd')
+    thread_obj = Thread.objects.get(thread_cd=thread_cd)
+    context = {
+        'target_obj': thread_obj
+    }
+    return render(request, 'threadapp/detail.html', context)
 
 
 def thread_json(request):
-    page = request.GET.get('page', None)
     search = request.GET.get('search', None)
     sort = request.GET.get('sort', None)
     order = request.GET.get('order', None)
-    offset = int(request.GET.get('offset', 0))
-    limit = int(request.GET.get('limit', 10))
-    cur_page = int(offset / limit)
-    print("page : ", page, ", sort : ", sort, ", order : ", order, "\nsearch : ", search, ", offset : ", offset,
-          ", limit : ", limit, ", cur_page : ", cur_page)
+    offset = int(request.GET.get('offset', None))
+    limit = int(request.GET.get('limit', None))
+
+    thread_all = Thread.objects.all()
 
     if search:
         lookups = Q(thread_nm__icontains=search) | Q(thread_cd__icontains=search)
-        thread_all = Thread.objects.filter(lookups)
+        thread_all = thread_all.filter(lookups)
     else:
-        thread_all = Thread.objects.all()
+        thread_all = thread_all
 
     data = []
-    thread_list = thread_all
+    thread_list = thread_all.order_by('-created_at')
 
-    if sort:
-        thread_list = sorted(thread_all[offset: offset + limit], key=lambda p: sort)
+    if sort and order == 'asc':
+        thread_list = thread_list.order_by(f'{sort}')
+        thread_list = thread_list[offset:offset + limit]
+    elif sort and order == 'desc':
+        thread_list = thread_list.order_by(f'-{sort}')
+        thread_list = thread_list[offset:offset + limit]
     else:
-        thread_list = sorted(thread_all[offset: offset + limit], key=lambda p: 'thread_cd')
-
-    if order == 'desc':
-        thread_list = thread_list.reverse()
-    else:
-        thread_list = thread_list
+        thread_list = thread_list[offset:offset + limit]
 
     for thread in thread_list:
         inner_data = {
             "thread_cd": thread.thread_cd,
             "thread_nm": thread.thread_nm,
-            "content": thread.content
+            "content": thread.content,
         }
         data.append(inner_data)
 
@@ -84,6 +107,7 @@ def thread_json(request):
         "thread_count": thread_count,
         "rows": data,
     }
+
     return JsonResponse(json_data)
 
 

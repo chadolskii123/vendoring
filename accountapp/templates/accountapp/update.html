@@ -9,15 +9,15 @@
         <div class="form-group">
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
             {% if user.profile %}
-                {% if field.name == 'profile' %}<br/>
-                <img id='profile_img' src='{{ user.profile.url }}' alt=""
-                     style="height : 12rem; width:12rem; border-radius: 20rem; object-fit: cover;"/><br/>
-                {% endif %}
+            {% if field.name == 'profile' %}<br/>
+            <img id="profile_img" src='{{ user.profile.url }}' alt=""
+                 style="height : 12rem; width:12rem; border-radius: 20rem; object-fit: cover;"/><br/>
+            {% endif %}
             {% else %}
-                {% if field.name == 'profile' %}<br/>
-                <img id='profile_img' src='' alt=""
-                     style="height : 12rem; width:12rem; border-radius: 20rem; object-fit: cover;"/><br/>
-                {% endif %}
+            {% if field.name == 'profile' %}<br/>
+            <img id="profile_img" src='' alt=""
+                 style="height : 12rem; width:12rem; border-radius: 20rem; object-fit: cover;"/><br/>
+            {% endif %}
             {% endif %}
 
             {{ field|add_class:'form-control' }}
@@ -34,7 +34,6 @@
 
     $(function () {
         $('#id_profile').change(function () {
-            console.log("asdf")
             if (this.files[0]) {
                 var reader = new FileReader();
                 reader.readAsDataURL(this.files[0]);
@@ -44,7 +43,6 @@
             }
         })
     })
-
 </script>
 
 {% endblock %}

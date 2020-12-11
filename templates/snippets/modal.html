@@ -1,0 +1,33 @@
+{% load bootstrap4 %}
+<button id="add" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal"
+        data-whatever="@mdo">
+    <i class="fa fa-trash"></i>
+    Add
+</button>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Thread Creation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'threadapp:create' %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                    {% bootstrap_form form %}
+                    <br/>
+                    <button type="submit" class="btn btn-dark rounded-pill col-6">업로드</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#myModal').on('shown.bs.modal', function () {
+        $('#myInput').trigger('focus')
+    })
+</script>

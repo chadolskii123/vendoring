@@ -1,108 +1,90 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
-{% block content %}
-<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.css">
-<script src="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.js"></script>
-<script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
-<script src="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table-locale-all.min.js"></script>
+{% block head %}
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
       integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+
+<script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
 <script src="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.js"></script>
-<link href="https://s3-us-west-2.amazonaws.com/colors-css/2.2.0/colors.min.css" rel="stylesheet">
+<script src="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table-locale-all.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.1/dist/extensions/export/bootstrap-table-export.min.js"></script>
+
+<!--PDF - 한글 지원을 안해서 기능을 뺌-->
+<!--<script src="https://unpkg.com/tableexport.jquery.plugin/libs/jsPDF/jspdf.min.js"></script>-->
+<!--<script src="https://unpkg.com/tableexport.jquery.plugin/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>-->
+
 
 <style>
+
     .like {
         margin-right: 10px;
     }
 </style>
-
-<h1>{{ title }}</h1>
+{% endblock %}
+{% block content %}
+<div class="col-12">
+    <h1>{{title}}</h1>
+</div>
 <div id="toolbar">
-    <button id="add" class="btn btn-secondary">
-        <i class="fa fa-trash"></i> Add
-    </button>
-    <button id="save" class="btn btn-warning" disabled>
-        <i class="fa fa-trash"></i> Save
-    </button>
+    {% include 'snippets/modal.html' with form=create_form %}
     <button id="remove" class="btn btn-danger" disabled>
         <i class="fa fa-trash"></i> Delete
     </button>
-    <a href="#" onclick="doExport()" class="btn btn-primary"><i class="fa fa-trash"></i>Export to PDF</a>
 </div>
-<input type="hidden" id="save_url" value="{%url 'threadapp:save' %}"/>
+<div id="editor"></div>
 <table
         id="table"
         data-toolbar="#toolbar"
         data-search="true"
         data-show-refresh="true"
-        data-show-toggle="true"
         data-show-fullscreen="true"
         data-show-columns="true"
         data-show-columns-toggle-all="true"
         data-detail-view="true"
+        data-sort-reset="true"
         data-show-export="true"
+        data-export-types="['excel']"
         data-click-to-select="true"
         data-detail-formatter="detailFormatter"
         data-minimum-count-columns="2"
-        data-show-pagination-switch="true"
+        data-show-pagination-switch="false"
         data-pagination="true"
-        data-pagination-detail-h-align="right"
-        data-pagination-h-align="left"
-        data-pagination-loop="false"
         data-id-field="id"
         data-page-list="[10, 25, 50, 100, all]"
         data-show-footer="true"
         data-side-pagination="server"
         data-url="{% url 'threadapp:json' %}"
-        data-query-params="queryParams"
         data-response-handler="responseHandler"
-        data-cache="false">
-
+        >
 </table>
-
+{% endblock %}
+{% block script %}
 <script>
-    let rm_list = [];
 
-    function exportExcel() {
-        $exportTable = $('#table')
-        $exportTable.tableExport({
-            type: 'excel',
-            fileName: 'ExportData',
-            escape: 'false',
-            ignoreColumn: '[3]',
-            mso: {styles: ['background-color', 'color', 'font-weight', 'border']}
-        });
+
+    function spread(){
+
     }
 
     var $table = $('#table')
     var $remove = $('#remove')
-    var $save = $('#save')
-    var $add = $('#add')
     var selections = []
 
     function getIdSelections() {
         return $.map($table.bootstrapTable('getSelections'), function (row) {
-            return row.thread_cd
+            return row['{{col1}}']
         })
     }
 
     function responseHandler(res) {
         $.each(res.rows, function (i, row) {
-            row.state = $.inArray(row.id, selections) !== -1
+            row.state = $.inArray(row["{{col1}}"], selections) !== -1
         })
         return res
     }
@@ -117,25 +99,31 @@
 
     function operateFormatter(value, row, index) {
         return [
-            '<a class="like" href="javascript:void(0)" title="Like">',
-            '<i class="fa fa-heart"></i>',
+            '<a class="like" href="javascript:void(0)" title="Detail">',
+            '<i class="fa fa-bars"></i>',
             '</a>  ',
-            '<a class="remove" href="javascript:void(0)" title="Remove">',
-            '<i class="fa fa-trash"></i>',
+            '<a class="modify" href="javascript:void(0)" title="Modify">',
+            '<i class="fas fa-cogs"></i>',
             '</a>'
         ].join('')
     }
 
     window.operateEvents = {
         'click .like': function (e, value, row, index) {
-            alert('You click like action, row: ' + JSON.stringify(row))
-        },
-        'click .remove': function (e, value, row, index) {
+            var detail_url = "{% url 'threadapp:detail' %}"
+            var thread_cd=row['{{col1}}']
 
-            $table.bootstrapTable('remove', {
-                field: 'thread_cd',
-                values: [row.thread_cd]
-            })
+             window.open(detail_url+"?thread_cd="+thread_cd, "Thread Detail", "width=800, height=700, left=350, top=130, toolbar=no, menubar=no, scrollbars=no, resizable=yes" );
+
+        },
+        'click .modify': function (e, value, row, index) {
+            var update_url = "{% url 'threadapp:update' %}"
+            var thread_cd=row['{{col1}}']
+
+            window.open(update_url+"?thread_cd="+thread_cd, "Thread Detail", "width=800, height=700, left=350, top=130, toolbar=no, menubar=no, scrollbars=no, resizable=yes" );
+            window.opener.afterChildSubmit();
+            window.close();
+
         }
     }
 
@@ -147,19 +135,20 @@
         return data.length
     }
 
+    //
     // function totalPriceFormatter(data) {
-    //     var field = this.field
-    //     return '$' + data.map(function (row) {
-    //         return +row[field].substring(1)
-    //     }).reduce(function (sum, i) {
-    //         return sum + i
-    //     }, 0)
+    //   var field = this.field
+    //   return '$' + data.map(function (row) {
+    //     return +row[field].substring(1)
+    //   }).reduce(function (sum, i) {
+    //     return sum + i
+    //   }, 0)
     // }
 
     function initTable() {
-        rm_list = []
         $table.bootstrapTable('destroy').bootstrapTable({
-            height: 550,
+            height: "auto",
+            locale: 'ko-KR',
             columns: [
                 [{
                     field: 'state',
@@ -168,44 +157,35 @@
                     align: 'center',
                     valign: 'middle'
                 }, {
-                    title: 'Thread_cd',
-                    field: 'thread_cd',
+                    title: '{{col1}}',
+                    field: '{{col1}}',
                     rowspan: 2,
                     align: 'center',
                     valign: 'middle',
                     sortable: true,
-                    footerFormatter: totalTextFormatter
-                }, {
-                    title: 'Detail',
-                    colspan: 3,
-                    align: 'center'
-                }],
-                [{
-                    title: 'thread_nm',
-                    field: 'thread_nm',
+                    footerFormatter: 'totalTextFormatter'
+                },{
+                    field: '{{col2}}',
+                    title: '{{col2}}',
                     sortable: true,
-                    footerFormatter: totalNameFormatter,
+                    footerFormatter: 'totalNameFormatter',
                     align: 'center'
                 }, {
-                    field: 'content',
-                    title: 'content',
+                    field: '{{col3}}',
+                    title: '{{col3}}',
                     sortable: true,
                     align: 'center',
-                    footerFormatter: 'totalPriceFormatter'
+                    footerFormatter: ''
                 }, {
                     field: 'operate',
                     title: 'Item Operate',
                     align: 'center',
-
                     clickToSelect: false,
                     events: window.operateEvents,
                     formatter: operateFormatter
-                }]
-            ],
-            // 페이징 처리 - (앞에서 나오는 페이징, 뒤에서나오는 페이징, 가운데 보여줄지 말지)
-            paginationSuccessivelySize: 5,
-            paginationPagesBySide: 2,
-            paginationUseIntermediate: $('#paginationUseIntermediate').prop('checked')
+                }],
+                [ ]
+            ]
         })
         $table.on('check.bs.table uncheck.bs.table ' +
             'check-all.bs.table uncheck-all.bs.table',
@@ -217,56 +197,48 @@
                 // push or splice the selections if you want to save all data selections
             })
         $table.on('all.bs.table', function (e, name, args) {
+            console.log(e)
         })
         $remove.click(function () {
-            var ids = getIdSelections()
-            $table.bootstrapTable('remove', {
-                field: 'thread_cd',
-                values: ids
-            })
-            $remove.prop('disabled', true)
-
-            for (var i = 0; i < ids.length; i++) {
-                rm_list.push(ids[i])
-            }
-            if (rm_list.length > 0) {
-                $save.prop('disabled', false)
-            } else {
-                $save.prop('disabled', true)
-            }
-        })
-        $save.click(function () {
-            $rm_list = rm_list.join(",")
-            if ($rm_list) {
-                if (confirm("저장 하시겠습니까?")) {
-                    $.ajax({
-                        url: "{% url 'threadapp:save' %}",
-                        type: 'POST',
-                        data: {
-                            "csrfmiddlewaretoken": "{{ csrf_token }}",
-                            "rm_list": $rm_list
-                        },
-                        success: function (response) {
-                            console.log(response.msg)
-                        },
-                        error: function (err) {
-                            console.log(err);
-                        }
-                    });
+                removal_confirm = confirm("삭제 후에는 복구가 불가능합니다.\n삭제 하시겠습니까?")
+                if (removal_confirm) {
+                    var ids = getIdSelections()
+                    data = ids.join(",")
+                    if (ids) {
+                        $.ajax({
+                            url: "{% url 'threadapp:save' %}",
+                            type: 'POST',
+                            data: {
+                                "csrfmiddlewaretoken": "{{ csrf_token }}",
+                                "rm_list": data
+                            },
+                            success: function (response) {
+                                console.log(response.msg)
+                                location.reload();
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        });
+                    }
                 }
             }
-        })
+        )
     }
 
     $(function () {
         initTable()
-        $save.click(initTable)
     })
 
-    function queryParams(params) {
-        $save.prop("disabled", true)
-        return params
-    }
-
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.js"></script>
 {% endblock %}

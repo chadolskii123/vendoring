@@ -5,7 +5,6 @@ from threadapp.models import Thread
 
 
 class ThreadCreationForm(ModelForm):
-    # owner = forms.MultipleChoiceField(queryset=Thread.objects.all(), required=False, label='회사')
 
     class Meta:
         model = Thread

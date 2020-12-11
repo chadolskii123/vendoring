@@ -21,6 +21,8 @@
     <link href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" rel="stylesheet">
 
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    {% block head %}
+    {% endblock %}
 
 </head>
 <body>
@@ -38,7 +40,6 @@
 {% block content %}
 
 {% endblock %}
-
 
 </div>
 </main>

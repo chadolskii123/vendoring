@@ -1,13 +1,14 @@
 from django.urls import path
 
-from threadapp.views import ThreadListView, ThreadCreateView, ThreadDetailView, thread_json, thread_save
+from threadapp.views import *
 
 app_name = 'threadapp'
 
-urlpatterns =[
-    path('list/', ThreadListView.as_view(), name='list'),
+urlpatterns = [
+    path('list/', ThreadListView.as_view(), name='library'),
     path('create/', ThreadCreateView.as_view(), name='create'),
-    path('detail/<int:pk>', ThreadDetailView.as_view(), name='detail'),
+    path('update/', thread_update, name='update'),
+    path('detail/', thread_detail, name='detail'),
     path('thread_json/', thread_json, name='json'),
     path('save/', thread_save, name='save'),
     path('add/', thread_json, name='add'),

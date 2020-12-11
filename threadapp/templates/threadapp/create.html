@@ -7,7 +7,7 @@
             <h4>Thread Create</h4>
         </div>
         <div>
-            <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+            <form action="{% url 'threadapp:create' %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
                 {% bootstrap_form form %}
                 <br/>
                 <button type="submit" class="btn btn-dark rounded-pill col-6">업로드</button>
